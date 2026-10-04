@@ -1,0 +1,15 @@
+# 核心依赖（本地 SQLite 起步必需）
+SQLAlchemy>=2.0
+alembic>=1.12
+pydantic>=2.0
+openpyxl>=3.1            # 阶段7：Excel 导出（业务交付）
+fastapi>=0.110           # 阶段11：内部云 REST 服务
+uvicorn>=0.27            # 阶段11：ASGI 服务器
+python-multipart>=0.0.9  # 阶段11：文件上传（归档）
+httpx>=0.27              # 阶段11：TestClient 测接口（tests/ 用）
+
+# 可选依赖（按阶段逐步启用，先注释不装）
+# psycopg[binary]>=3.1   # 阶段5/11：PostgreSQL 驱动（多人并发归档时启用）
+# pandas>=2.0            # 阶段3/6：横向对比的 Dataframe、时序降采样
+# duckdb>=0.9           # 阶段5/6：高频波形旁挂列式分析
+# pytest>=8.0           # 跑 tests/ 需要

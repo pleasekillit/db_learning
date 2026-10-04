@@ -1,0 +1,43 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+
+# ---- 测试与缓存 ----
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ---- 运行时产物：数据库 / 归档 / 导出（本地生成，不入库）----
+*.db
+*.sqlite
+*.sqlite3
+*.bak
+archive/
+archive_demo/
+backups/
+exports/
+*.parquet
+*.npy
+*.hdf5
+*.h5
+
+# ---- 编辑器 / 系统 ----
+.idea/
+.vscode/
+.DS_Store
+*.swp
+
+# ---- 非项目内容 ----
+.screenshots/
+.uploads/
+
+# ---- 密钥与本地配置 ----
+.env
+*.pem
