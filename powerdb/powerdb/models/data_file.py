@@ -13,7 +13,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from powerdb.core.base import Base
 from powerdb.models.common import TimestampMixin
 
-
 class DataFile(Base, TimestampMixin):
     """与某条测试记录（用例执行）相关联的数据文件。"""
 
