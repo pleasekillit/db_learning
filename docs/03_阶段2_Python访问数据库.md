@@ -48,7 +48,7 @@ conn.close()
 ### 2. SQLAlchemy Core（SQL 表达式，中间层）
 
 ```python
-from sqlalchemy import create_engine, insert, select, Table, MetaData, Column, String, Float
+from sqlalchemy import create_engine, insert, select, Table, MetaData, Column, String, Float, Integer
 
 engine = create_engine("sqlite:///demo.db")
 metadata = MetaData()
