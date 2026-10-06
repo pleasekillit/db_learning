@@ -156,6 +156,15 @@ def init_engine(config: DatabaseConfig | None = None) -> Engine:
             cursor.close()
 ```
 
+> 表格链条如下
+
+```text
+Project → Sample → TestRun → TestRecord → Measurement
+                                      └─ test_record_id 指向 test_records.id
+```
+
+> 为了避免产生孤儿数据，需要通过`PRAGMA foreign_keys=ON`启用外键检查
+
 ### 学习待办（Todo）
 
 - [ ] 用 sqlite3 / Core / ORM 各写一遍「插入+查询」
