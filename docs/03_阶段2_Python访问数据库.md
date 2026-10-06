@@ -114,21 +114,46 @@ python3 examples/seed_demo.py
 | 示例         | 插入了数据但下次查不到               | 忘了 `commit`/事务未提交                                 | 用 `session_scope` 统一收口 |
 | 示例         | `fetchall()` 返回多行却只想要一行报错 | 用了 `scalar` 但结果非唯一                                | 确认过滤条件唯一，或用 `.first()` |
 | 2026-10-06 | 问题1：环境变量                  | `config.py`中的`DatabaseConfig` 类使用了os.environ的取值方式 | 详见问题1                  |
+| 2026-10-06 | 问题2：弥补SQLite外键检查          | 原本的SQLite3是不支持外键检查的，该项目的`engine.py`加上了            | 详见问题2                  |
 
 #### 问题1：环境变量
 
 - `.env` 文件 +`load_dotenv()`方式做到可配置
+
 > 用 .env 文件
 > 安装`python-dotenv` 后，在项目根放一个`.env` 文件：
+
 ```ini
-POWERDB_URL=postgresql+psycopg://user:pass@127.0.0.1:5432/powerdb
-POWERDB_ECHO=1
+POWERDB_URL = postgresql+psycopg://user:pass@127.0.0.1:5432/powerdb
+POWERDB_ECHO = 1
 ```
 
 > 代码里加一行`load_dotenv()` ，就会自动把`.env` 里的变量加载到`os.environ` ：
+
 ```python
 from dotenv import load_dotenv
+
 load_dotenv()  # 放在程序入口最顶部
+```
+
+#### 问题2：弥补SQLite外键检查
+
+- 原本SQLite3没有默认的外键检查，这会导致一些脏数据生成，因此该项目的`engine.py`做了外键检查加强
+
+```python
+def init_engine(config: DatabaseConfig | None = None) -> Engine:
+    """初始化全局引擎（应用启动时调用一次）。"""
+    global _engine, _SessionFactory
+    config = config or DatabaseConfig()
+    _engine = _build_engine(config)
+
+    if config.url.startswith("sqlite"):
+        # 让 SQLite 也遵守外键约束（默认是关闭的）
+        @event.listens_for(_engine, "connect")
+        def _set_sqlite_pragma(dbapi_conn: Any, _: Any) -> None:
+            cursor = dbapi_conn.cursor()
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.close()
 ```
 
 ### 学习待办（Todo）
