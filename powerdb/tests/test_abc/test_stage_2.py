@@ -64,6 +64,7 @@ def test_use_sqlalchemy():
         rows = conn.execute(select(measurements).where(measurements.c.metric == "efficiency"))
         print(rows.fetchall())
 
+
 def test_use_sqlalchemy_01():
     """
     依赖外键的检查已经在engine模块中明确，因此这条用例会出发外键存在性检查
@@ -78,6 +79,7 @@ def test_use_sqlalchemy_01():
         conn.execute(insert(Measurement.__table__).values(test_record_id=7, metric="efficiency", value=92.2, unit="%"))
         rows = conn.execute(select(Measurement.__table__).where(Measurement.__table__.c.metric == "efficiency"))
         print(rows.fetchall())
+
 
 def test_use_sqlalchemy_02():
     from powerdb.core.engine import session_scope
@@ -101,6 +103,7 @@ def test_use_sqlalchemy_02():
         session.flush()
         session.add(Measurement(test_record_id=rec.id, metric="efficiency", value=95.0, unit="%"))
         # session.add(Measurement(test_record_id=rec.id, metric="efficiency", value=97.8, unit="%"))
+
 
 def test_use_sqlalchemy_03():
     from powerdb.core.engine import session_scope, init_engine
@@ -135,17 +138,17 @@ def test_use_sqlalchemy_03():
 
 # 全库所有模型，按「从顶层到底层」排列：Project 无外键 → ... → 叶子表
 ALL_MODELS = [
-    Project,            # 顶层：无外键
-    Sample,             # -> projects
-    Standard,           # 顶层：无外键
-    StandardItem,       # -> standards
-    Instrument,         # 顶层：无外键
-    TestRun,            # -> samples
-    TestRecord,         # -> test_runs / standard_items / instruments
-    Measurement,        # -> test_records
+    Project,  # 顶层：无外键
+    Sample,  # -> projects
+    Standard,  # 顶层：无外键
+    StandardItem,  # -> standards
+    Instrument,  # 顶层：无外键
+    TestRun,  # -> samples
+    TestRecord,  # -> test_runs / standard_items / instruments
+    Measurement,  # -> test_records
     TimeSeriesChannel,  # -> test_records
-    TimeSeriesPoint,    # -> timeseries_channels
-    DataFile,           # -> test_records
+    TimeSeriesPoint,  # -> timeseries_channels
+    DataFile,  # -> test_records
 ]
 
 
@@ -163,7 +166,11 @@ def db(tmp_path):
 def test_base_metadata_registers_all_tables():
     """Base.metadata 是所有表的唯一事实来源：models 一导入，表就全注册好了。"""
     expected = {m.__tablename__ for m in ALL_MODELS}
-    assert expected <= set(Base.metadata.tables.keys())
+
+    print(expected)
+    obj_1 = Base.metadata.tables.keys()
+    print(obj_1)
+    assert expected <= set(obj_1)
 
 
 def test_every_model_maps_to_a_table():
@@ -182,6 +189,7 @@ def test_primary_key_is_id():
 
 def test_foreign_key_targets_top_down():
     """一张表看清整条外键链——就是让你头疼的那些依赖，其实可以静态列出来。"""
+
     def fk_targets(model):
         # parent.name = 本表列名；target_fullname = 指向的「表.列」
         return {fk.parent.name: fk.target_fullname for fk in model.__table__.foreign_keys}
@@ -317,8 +325,8 @@ def test_relationship_fills_foreign_key_automatically(db):
 
     with session_scope() as session:
         sample = session.scalar(select(Sample).where(Sample.code == "S-REL"))
-        assert sample.project_id is not None       # 外键被自动写上
-        assert sample.project.name == "P-REL"       # 子 → 父 反向导航
+        assert sample.project_id is not None  # 外键被自动写上
+        assert sample.project.name == "P-REL"  # 子 → 父 反向导航
         assert [s.code for s in sample.project.samples] == ["S-REL"]  # 父 → 子
 
 
